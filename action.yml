@@ -1,0 +1,31 @@
+name: Check if Docker image exists
+description: Checks whether a Docker image with a given tag already exists
+
+inputs:
+  image:
+    description: Full image name, for example ghcr.io/org/app:tag
+    required: true
+
+outputs:
+  exists:
+    description: Whether the image exists
+    value: ${{ steps.check.outputs.exists }}
+
+runs:
+  using: composite
+  steps:
+    - name: Check if image already exists
+      id: check
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+      run: |
+        set -euo pipefail
+
+        if docker manifest inspect "$IMAGE" >/dev/null 2>&1; then
+          echo "exists=true" >> "$GITHUB_OUTPUT"
+          echo "✅ Image $IMAGE already exists"
+        else
+          echo "exists=false" >> "$GITHUB_OUTPUT"
+          echo "🛠️ Image $IMAGE not found"
+        fi
