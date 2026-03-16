@@ -22,7 +22,7 @@ jobs:
         id: image_check
         uses: mspanc/docker-imageexists-action@v1
         with:
-          source: my-image:latest
+          image: my-image:latest
 
       - name: Build image
         if: steps.image_check.outputs.exists != 'true'
